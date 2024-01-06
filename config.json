@@ -1,0 +1,9 @@
+{    "installed": true,
+    "db": {
+        "host": "localhost",
+        "name": "simple_crud_php_mysql",
+        "username": "root",
+        "password": ""
+    }
+
+}

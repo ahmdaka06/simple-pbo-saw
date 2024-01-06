@@ -1,0 +1,107 @@
+<?php
+require_once '../init.php';
+if(user() == false) exit(redirect(base_url('/auth/logout')));
+set_page('Normalisasi');
+include '../layouts/primary.php';
+// query 
+# 1. Ambil nilai max dari setiap kriteria
+# 2. Hitung nilai normalisasi
+# 3. Hitung nilai bobot
+# 4. Hitung nilai akhir
+$search_max = $db->query([
+    'select' => 'MAX(matrik.kriteria_penghasilan) AS max_k1, MAX(matrik.kriteria_tanggungan) AS max_k2, MAX(matrik.kriteria_jenis_rumah) AS max_k3',
+    'table' => 'matrik',
+    'first' => true
+]);
+$matriks = $db->query([
+    'select' => 'warga.nama, matrik.*',
+    'table' => 'matrik',
+    // 'order_by' => 'matrik.nik asc'
+    'join' => 'LEFT JOIN warga ON matrik.nik=warga.nik',
+    'group_by' => 'matrik.nik',
+]);
+if (get('action') AND get('action') == 'delete') {
+    if (get('id') AND is_numeric(get('id'))) {
+        $query_warga = $db->query([
+            'select' => '*',
+            'table' => 'warga',
+            'where' => 'id = "' . escape(get('id')) .'"',
+            'first' => true
+        ]);
+        if ($query_warga['count'] == 0) { // cek apakah data tersedia
+            flashdata(['alert' => 'danger', 'title' => 'Gagal !', 'msg' => 'Data warga tidak di temukan!.']);
+            exit(redirect(base_url('warga')));
+        }
+        if ($db->deleteById('warga', escape(get('id')))) {
+            flashdata(['alert' => 'success', 'title' => 'Berhasil !', 'msg' => 'Berhasil menghapus data warga ' . $query_warga['rows']['nama'] . '!.']);
+            exit(redirect(base_url('warga')));
+        } else {
+            flashdata(['alert' => 'danger', 'title' => 'Gagal !', 'msg' => 'Gagal menghapus data warga!.']);
+        }
+    }
+}
+?>
+<div class="row">
+    <div class="row ">
+        <div class="col-md-12">
+            <?= alert() ?>
+        </div>
+    </div>
+    <div class="row my-5">
+        <div class="col-md-12">
+        <h3 class="text-center"> Daftar Nama Calon Penerima Bantuan </h3>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
+            <!-- <div class="card-header bg-primary py-3">
+                <h5 class="card-title text-white"><i class="mdi mdi-account-multiple-outline"></i> Data Warga</h5>
+            </div> -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-nowrap">
+                        <thead>
+                            <tr class="">
+                                <th width="20" scope="col" class="text-white">#</th>
+                                <th width="150" scope="col" class="text-white">NIK</th>
+                                <th width="350" scope="col" class="text-white">NAMA WARGA</th>
+                                <th width="300" scope="col" class="text-white">KRITERIA 1</th>
+                                <th width="300" scope="col" class="text-white">KRITERIA 2</th>
+                                <th width="300" scope="col" class="text-white">KRITERIA 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <?php 
+                                // Buat array bobot C1 = 40%, C2 = 25%, C3 = 30%
+                                $array_bobot = [0.4, 0.25, 0.35];
+
+                            ?>
+                            <?php 
+                                if ($matriks['count'] == 0){ 
+                            ?>
+                            <tr>
+                                <td colspan="6" class="text-center">Data masih kosong...</td>
+                            </tr>
+                            <?php } ?>
+                            <?php 
+                            $no = 1;
+                            foreach($matriks['rows'] as $key => $value) {  
+                            ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= $value['nik'] ?></td>
+                                <td><?= $value['nama'] ?></td>
+                                <td><?= round($value['kriteria_penghasilan'] / $search_max['rows']['max_k1'],2) ?></td>
+                                <td><?= round($value['kriteria_tanggungan'] / $search_max['rows']['max_k2'],2) ?></td>
+                                <td><?= round($value['kriteria_jenis_rumah'] / $search_max['rows']['max_k3'],2) ?></td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php include '../layouts/footer.php'; ?>
