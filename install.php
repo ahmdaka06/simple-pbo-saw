@@ -13,7 +13,7 @@ include 'layouts/primary.php';
                     <h4 class="alert-heading">Warning!</h4>
                     <p>Aplikasi sudah di install</p>
                     <hr>
-                    <p class="mb-0">Jika ingin install ulang ubah value installed ke false pada file .env</p>
+                    <p class="mb-0">Jika ingin install ulang ubah value isi .env dengan isi .env.example</p>
                 </div>
                 <?php } else { ?>
                 <?php
@@ -83,17 +83,17 @@ include 'layouts/primary.php';
 
                                 $_SESSION['install'] = 1;
 
-                                $path = __DIR__ . '/.env';
-                                if (file_exists($path)) {
-                                    file_put_contents($path, str_replace('INSTALLED=' . getenv('INSTALLED'), 'INSTALLED=true', file_get_contents($path)));
-                                    file_put_contents($path, str_replace('DB_HOST=' . getenv('DB_HOST'), 'DB_HOST=' . $db_host, file_get_contents($path)));
-                                    file_put_contents($path, str_replace('DB_DATABASE=' . getenv('DB_DATABASE'), 'DB_DATABASE=' . $db_name, file_get_contents($path)));
-                                    file_put_contents($path, str_replace('DB_USERNAME=' . getenv('DB_USERNAME'), 'DB_USERNAME=' . $db_username, file_get_contents($path)));
-                                    file_put_contents($path, str_replace('DB_PASSWORD=' . getenv('DB_PASSWORD'), 'DB_PASSWORD=' . $db_password, file_get_contents($path)));
+                                $pathENV = __DIR__ . '/.env';
+                                if (file_exists($pathENV)) {
+                                    file_put_contents($pathENV, str_replace('INSTALLED=' . getenv('INSTALLED'), 'INSTALLED=true', file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('DB_HOST=' . getenv('DB_HOST'), 'DB_HOST=' . $db_host, file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('DB_DATABASE=' . getenv('DB_DATABASE'), 'DB_DATABASE=' . $db_name, file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('DB_USERNAME=' . getenv('DB_USERNAME'), 'DB_USERNAME=' . $db_username, file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('DB_PASSWORD=' . getenv('DB_PASSWORD'), 'DB_PASSWORD=' . $db_password, file_get_contents($pathENV)));
 
-                                    file_put_contents($path, str_replace('APP_NAME="' . getenv('APP_NAME') . '"', 'APP_NAME="' . $app_name .'"', file_get_contents($path)));
-                                    file_put_contents($path, str_replace('APP_SHORT_NAME="' . getenv('APP_SHORT_NAME') . '"', 'APP_SHORT_NAME="' . $app_short_name . '"', file_get_contents($path)));
-                                    file_put_contents($path, str_replace('APP_DESCRIPTION="' . getenv('APP_DESCRIPTION') . '"', 'APP_DESCRIPTION="' . $app_description . '"', file_get_contents($path)));
+                                    file_put_contents($pathENV, str_replace('APP_NAME="' . getenv('APP_NAME') . '"', 'APP_NAME="' . $app_name .'"', file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('APP_SHORT_NAME="' . getenv('APP_SHORT_NAME') . '"', 'APP_SHORT_NAME="' . $app_short_name . '"', file_get_contents($pathENV)));
+                                    file_put_contents($pathENV, str_replace('APP_DESCRIPTION="' . getenv('APP_DESCRIPTION') . '"', 'APP_DESCRIPTION="' . $app_description . '"', file_get_contents($pathENV)));
                                 }
 
                                 print "Table berhasil di import <br />";
